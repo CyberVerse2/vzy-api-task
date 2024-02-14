@@ -4,8 +4,8 @@
   "description": "Vzy API task",
   "main": "index.js",
   "scripts": {
-    "start-prod": "node -r ts-node/register/transpile-only -r tsconfig-paths/register build/server.js",
-    "start": "node build/server.js",
+    "start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register build/server.js",
+    "start-prod": "node build/server.js",
     "build": "tsc",
     "dev": "nodemon",
     "format:check": "prettier --check .",
