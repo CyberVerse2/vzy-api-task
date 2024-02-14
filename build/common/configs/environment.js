@@ -43,9 +43,6 @@ exports.ENVIRONMENT = {
         ACCESS: process.env.ACCESS_JWT_EXPIRES_IN,
         REFRESH: process.env.REFRESH_JWT_EXPIRES_IN
     },
-    EMAIL: {
-        API_KEY: process.env.RESEND_API_KEY
-    },
     STRIPE: {
         TEST: {
             SECRET_KEY: process.env.STRIPE_TEST_SECRET_KEY,

@@ -11,30 +11,33 @@ const environment_1 = require("./common/configs/environment");
 const appError_1 = __importDefault(require("./common/utils/appError"));
 const appResponse_1 = require("./common/utils/appResponse");
 const user_model_1 = __importDefault(require("./modules/user/user.model"));
+const express_2 = __importDefault(require("express"));
 const api = (0, express_1.Router)();
 api.use('/auth', auth_router_1.default);
 api.use('/user', user_router_1.default);
 const endpointSecret = environment_1.ENVIRONMENT.STRIPE.TEST.WEBHOOK;
-const stripeApp = new stripe_1.default(environment_1.ENVIRONMENT.STRIPE.TEST.SECRET_KEY);
-api.post('/webhook', async (req, res) => {
-    const { user } = req;
+const stripe = new stripe_1.default(environment_1.ENVIRONMENT.STRIPE.TEST.SECRET_KEY);
+console.log(endpointSecret);
+api.post('/webhook', express_2.default.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
     try {
-        event = stripeApp.webhooks.constructEvent(req.body, sig, endpointSecret);
+        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     }
     catch (err) {
-        res.status(400).send(`Webhook Error: ${err}`);
-        return;
+        throw new appError_1.default(err);
     }
     // Handle the event
-    console.log(event);
     if (event.type === 'charge.succeeded') {
         const email = event.data.object.billing_details.email;
-        console.log(email);
+        console.log(event);
+        if (!email) {
+            return (0, appResponse_1.AppResponse)(res, 200, null, `Email wasn't given since it's in a test environment`);
+        }
         const updatedUser = await user_model_1.default.updateOne({ email }, {
             paymentStatus: 'paid'
         });
+        console.log(updatedUser);
         if (!updatedUser)
             throw new appError_1.default(`Error in updating user`);
     }

@@ -32,7 +32,14 @@ const stripeApp = new stripe_1.default(environment_1.ENVIRONMENT.STRIPE.TEST.SEC
 app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)());
 app.use((0, cookie_parser_1.default)());
-app.use(express_1.default.json({ limit: '10kb' }));
+app.use((req, res, next) => {
+    if (req.originalUrl === '/api/v1/webhook') {
+        next();
+    }
+    else {
+        express_1.default.json()(req, res, next);
+    }
+});
 app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
 app.use(express_1.default.urlencoded({ limit: '50mb', extended: true }));
 app.disable('x-powered-by');

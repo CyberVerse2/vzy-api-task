@@ -8,9 +8,6 @@ export interface IEnvironment {
   DB: {
     URL: string;
   };
-  EMAIL: {
-    API_KEY: string;
-  };
   JWT: {
     ACCESS_KEY: string;
     REFRESH_KEY: string;
@@ -19,7 +16,6 @@ export interface IEnvironment {
     ACCESS: string;
     REFRESH: string;
   };
-  FRONTEND_URL?: string;
   STRIPE: {
     TEST: {
       SECRET_KEY: string;

@@ -32,7 +32,13 @@ const stripeApp = new stripe(ENVIRONMENT.STRIPE.TEST.SECRET_KEY);
 app.use(helmet());
 app.use(cors());
 app.use(cookieParser());
-app.use(express.json({ limit: '10kb' }));
+app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
+  if (req.originalUrl === '/api/v1/webhook') {
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
 app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.disable('x-powered-by');
