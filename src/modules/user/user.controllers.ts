@@ -5,7 +5,7 @@ import { catchAsync } from '../../common/utils/catchAsync';
 import { AppResponse } from '../../common/utils/appResponse';
 import { UpdateUserDto } from './dto/update.dto';
 import { validateEntity } from '../../common/utils/helper';
-import { EntityTransformer } from 'src/common/transformers/entityTransformer';
+import { EntityTransformer } from '../../common/transformers/entityTransformer';
 import { IUser } from './user.interface';
 
 const httpGetCurrentUser = catchAsync(async (req: Request, res: Response) => {

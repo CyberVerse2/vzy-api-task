@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { IUser } from './user.interface';
-import { hashData } from 'src/common/utils/helper';
+import { hashData } from '../../common/utils/helper'
 
 const User = new Schema(
   {
