@@ -37,6 +37,7 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
     console.log(req.originalUrl)
     next();
   } else {
+    console.log('This is where the error is happening')
     express.json()(req, res, next);
   }
 });

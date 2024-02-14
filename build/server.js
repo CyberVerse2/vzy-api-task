@@ -38,6 +38,7 @@ app.use((req, res, next) => {
         next();
     }
     else {
+        console.log('This is where the error is happening');
         express_1.default.json()(req, res, next);
     }
 });
