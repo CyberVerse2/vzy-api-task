@@ -30,6 +30,7 @@ api.post('/webhook', async (req: Request, res: Response) => {
   }
 
   // Handle the event
+  console.log(event)
   if (event.type === 'charge.succeeded') {
     const email = event.data.object.billing_details.email;
     console.log(email);
