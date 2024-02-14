@@ -34,6 +34,7 @@ app.use(cors());
 app.use(cookieParser());
 app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
   if (req.originalUrl === '/api/v1/webhook') {
+    console.log(req.originalUrl)
     next();
   } else {
     express.json()(req, res, next);
