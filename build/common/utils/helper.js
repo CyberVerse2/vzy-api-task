@@ -11,7 +11,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const class_validator_1 = require("class-validator");
 const appError_1 = __importDefault(require("./appError"));
 const generateRandomString = () => {
-    return (0, crypto_1.randomBytes)(10).toString("hex");
+    return (0, crypto_1.randomBytes)(10).toString('hex');
 };
 exports.generateRandomString = generateRandomString;
 const hashData = async (data) => {
@@ -26,7 +26,7 @@ const compareData = async (data, hashedData) => {
 exports.compareData = compareData;
 const signData = (data, secret, expiresIn) => {
     return jsonwebtoken_1.default.sign({ ...data }, secret, {
-        expiresIn,
+        expiresIn
     });
 };
 exports.signData = signData;
@@ -37,10 +37,10 @@ exports.decodeData = decodeData;
 const setCookie = (res, name, value, options = {}) => {
     res.cookie(name, value, {
         httpOnly: true,
-        secure: environment_1.ENVIRONMENT.APP.ENV === "production",
-        path: "/",
-        sameSite: "none",
-        ...options,
+        secure: environment_1.ENVIRONMENT.APP.ENV === 'production',
+        path: '/',
+        sameSite: 'none',
+        ...options
     });
 };
 exports.setCookie = setCookie;
@@ -53,7 +53,7 @@ const validateEntity = async (dto) => {
                 errorMap.push(constraint);
             }
         });
-        throw new appError_1.default("Validation error", 400, errorMap);
+        throw new appError_1.default('Validation error', 400, errorMap);
     }
 };
 exports.validateEntity = validateEntity;

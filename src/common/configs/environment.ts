@@ -25,12 +25,12 @@ export const ENVIRONMENT: IEnvironment = {
   STRIPE: {
     TEST: {
       SECRET_KEY: process.env.STRIPE_TEST_SECRET_KEY!,
-      PUBLIC_KEY: process.env.STRIPE_TEST_PUBLIC_KEY!
+      PUBLIC_KEY: process.env.STRIPE_TEST_PUBLIC_KEY!,
+      WEBHOOK: process.env.STRIPE_TEST_WEBHOOK_SECRET_KEY!
     },
     LIVE: {
       SECRET_KEY: process.env.STRIPE_LIVE_SECRET_KEY!,
       PUBLIC_KEY: process.env.STRIPE_LIVE_PUBLIC_KEY!,
-      WEBHOOK: process.env.STRIPE_LIVE_WEBHOOK_URL!
-    }
+      WEBHOOK: process.env.STRIPE_LIVE_WEBHOOK_URL!    }
   }
 };

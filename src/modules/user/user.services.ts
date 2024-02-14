@@ -12,13 +12,11 @@ export async function findUser(value: string, field: string): Promise<IUser | nu
   return await UserModel.findOne({ [field]: value });
 }
 
-export async function updateUser(
-  id: string,
-  details?: IUser
-): Promise<IUser>{
-
-  console.log(id, details)
-  const updatedUser = await UserModel.findByIdAndUpdate(id, details, { new: true }).catch((err) => console.log(err))
+export async function updateUser(id: string, details?: IUser): Promise<IUser> {
+  console.log(id, details);
+  const updatedUser = await UserModel.findByIdAndUpdate(id, details, { new: true }).catch((err) =>
+    console.log(err)
+  );
   if (!updatedUser) throw new AppError(`Error in updating user. Please try again`, 400);
-  return updatedUser
+  return updatedUser;
 }

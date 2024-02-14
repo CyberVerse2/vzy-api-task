@@ -14,14 +14,11 @@ const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const logger_1 = require("./common/utils/logger");
 const morgan_1 = __importDefault(require("morgan"));
-const appResponse_1 = require("./common/utils/appResponse");
 const db_1 = require("./common/configs/db");
 const catchAsync_1 = require("./common/utils/catchAsync");
 const connect_timeout_1 = __importDefault(require("connect-timeout"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const stripe_1 = __importDefault(require("stripe"));
-const user_services_1 = require("./modules/user/user.services");
-const protect_1 = require("./common/middlewares/protect");
 /**
  * Default app configurations
  */
@@ -36,6 +33,7 @@ app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)());
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json({ limit: '10kb' }));
+app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
 app.use(express_1.default.urlencoded({ limit: '50mb', extended: true }));
 app.disable('x-powered-by');
 const timeoutMiddleware = (0, connect_timeout_1.default)(60000);
@@ -70,38 +68,10 @@ app.use(errorHandler_1.handleError);
 /**
  * status check
  */
-app.get('*', (req, res) => res.send({
+app.get('/', (req, res) => res.send({
     Time: new Date(),
     status: 'running'
 }));
-const endpointSecret = 'whsec_df2f22219bce3e4b8c70bb49a85f8a065149e4ff2d591283b7c303ae185504b7';
-app.post('/webhook', protect_1.protect, async (req, res) => {
-    const { user } = req;
-    const sig = req.headers['stripe-signature'];
-    let event;
-    try {
-        event = stripeApp.webhooks.constructEvent(req.body, sig, endpointSecret);
-    }
-    catch (err) {
-        res.status(400).send(`Webhook Error: ${err}`);
-        return;
-    }
-    // Handle the event
-    if (event.type === 'charge.succeeded') {
-        const chargeSucceeded = event.data.object;
-        console.log(chargeSucceeded);
-        const updatedUser = await (0, user_services_1.updateUser)(user.id, {
-            paymentStatus: 'paid'
-        });
-        if (!updatedUser)
-            throw new appError_1.default(`Error in updating user`);
-    }
-    else {
-        console.log(`Unhandled event type ${event.type}`);
-    }
-    // Return a 200 response to acknowledge receipt of the event
-    return (0, appResponse_1.AppResponse)(res, 200, null, 'User payment successful');
-});
 /**
  * Bootstrap server
  */

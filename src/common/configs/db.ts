@@ -8,6 +8,6 @@ export const initializeDB = async () => {
     const conn = await mongoose.connect(ENVIRONMENT.DB.URL);
     console.log('MongoDB Connected: ' + conn.connection.host);
   } catch (error) {
-    throw new AppError(error as string)
+    throw new AppError(error as string);
   }
 };

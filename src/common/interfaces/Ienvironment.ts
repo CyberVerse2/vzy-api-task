@@ -24,11 +24,12 @@ export interface IEnvironment {
     TEST: {
       SECRET_KEY: string;
       PUBLIC_KEY: string;
+      WEBHOOK: string;
     };
     LIVE: {
       SECRET_KEY: string;
       PUBLIC_KEY: string;
-      WEBHOOK: string
+      WEBHOOK: string;
     };
   };
 }
