@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { ENVIRONMENT } from './common/configs/environment';
 import './common/interfaces/authRequest';
 import { Request, Response, NextFunction } from 'express';
@@ -9,8 +8,6 @@ import rateLimit from 'express-rate-limit';
 import { handleError } from './common/utils/errorHandler';
 import cors from 'cors';
 import helmet from 'helmet';
-import crypto from 'crypto';
-import compression from 'compression';
 import { stream } from './common/utils/logger';
 import morgan from 'morgan';
 import { AppResponse } from './common/utils/appResponse';
@@ -19,7 +16,7 @@ import { catchAsync } from './common/utils/catchAsync';
 import timeout from 'connect-timeout';
 import cookieParser from 'cookie-parser';
 import stripe from 'stripe';
-import { findUser, updateUser } from './modules/user/user.services';
+import { updateUser } from './modules/user/user.services';
 import { protect } from './common/middlewares/protect';
 /**
  * Default app configurations
