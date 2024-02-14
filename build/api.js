@@ -7,17 +7,16 @@ const express_1 = require("express");
 const auth_router_1 = __importDefault(require("./modules/auth/auth.router"));
 const user_router_1 = __importDefault(require("./modules/user/user.router"));
 const stripe_1 = __importDefault(require("stripe"));
-const user_services_1 = require("./modules/user/user.services");
-const protect_1 = require("./common/middlewares/protect");
 const environment_1 = require("./common/configs/environment");
 const appError_1 = __importDefault(require("./common/utils/appError"));
 const appResponse_1 = require("./common/utils/appResponse");
+const user_model_1 = __importDefault(require("./modules/user/user.model"));
 const api = (0, express_1.Router)();
 api.use('/auth', auth_router_1.default);
 api.use('/user', user_router_1.default);
 const endpointSecret = environment_1.ENVIRONMENT.STRIPE.TEST.WEBHOOK;
 const stripeApp = new stripe_1.default(environment_1.ENVIRONMENT.STRIPE.TEST.SECRET_KEY);
-api.post('/webhook', protect_1.protect, async (req, res) => {
+api.post('/webhook', async (req, res) => {
     const { user } = req;
     const sig = req.headers['stripe-signature'];
     let event;
@@ -30,9 +29,9 @@ api.post('/webhook', protect_1.protect, async (req, res) => {
     }
     // Handle the event
     if (event.type === 'charge.succeeded') {
-        const chargeSucceeded = event.data.object;
-        console.log(chargeSucceeded);
-        const updatedUser = await (0, user_services_1.updateUser)(user.id, {
+        const email = event.data.object.billing_details.email;
+        console.log(email);
+        const updatedUser = await user_model_1.default.updateOne({ email }, {
             paymentStatus: 'paid'
         });
         if (!updatedUser)

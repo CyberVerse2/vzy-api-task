@@ -8,6 +8,7 @@ import { Request, Response } from 'express';
 import { ENVIRONMENT } from './common/configs/environment';
 import AppError from './common/utils/appError';
 import { AppResponse } from './common/utils/appResponse';
+import UserModel from './modules/user/user.model';
 const api = Router();
 
 api.use('/auth', authRouter);
@@ -15,7 +16,7 @@ api.use('/user', userRouter);
 
 const endpointSecret = ENVIRONMENT.STRIPE.TEST.WEBHOOK;
 const stripeApp = new stripe(ENVIRONMENT.STRIPE.TEST.SECRET_KEY);
-api.post('/webhook', protect, async (req: Request, res: Response) => {
+api.post('/webhook', async (req: Request, res: Response) => {
   const { user } = req;
   const sig = req.headers['stripe-signature'];
 
@@ -30,11 +31,14 @@ api.post('/webhook', protect, async (req: Request, res: Response) => {
 
   // Handle the event
   if (event.type === 'charge.succeeded') {
-    const chargeSucceeded = event.data.object;
-    console.log(chargeSucceeded);
-    const updatedUser = await updateUser(user.id!, {
-      paymentStatus: 'paid'
-    });
+    const email = event.data.object.billing_details.email;
+    console.log(email);
+    const updatedUser = await UserModel.updateOne(
+      { email },
+      {
+        paymentStatus: 'paid'
+      }
+    );
 
     if (!updatedUser) throw new AppError(`Error in updating user`);
   } else {
