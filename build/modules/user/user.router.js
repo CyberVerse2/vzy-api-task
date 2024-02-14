@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const user_controllers_1 = require("./user.controllers");
+const protect_1 = require("../../common/middlewares/protect");
+const userRouter = (0, express_1.Router)();
+userRouter.use(protect_1.protect);
+userRouter.get('/', user_controllers_1.httpGetCurrentUser);
+userRouter.patch('/update', user_controllers_1.httpUpdateUser);
+userRouter.delete('/delete', user_controllers_1.httpDeleteUser);
+exports.default = userRouter;

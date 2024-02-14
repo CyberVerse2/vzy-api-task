@@ -36,7 +36,6 @@ pnpm-lock.yaml
 *.map
 
 # Build output
-build/
 dist/
 out/
 
