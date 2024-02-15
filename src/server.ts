@@ -15,16 +15,18 @@ import { initializeDB } from './common/configs/db';
 import { catchAsync } from './common/utils/catchAsync';
 import timeout from 'connect-timeout';
 import cookieParser from 'cookie-parser';
-import stripe from 'stripe';
+import { Stripe } from 'stripe';
 import { updateUser } from './modules/user/user.services';
 import { protect } from './common/middlewares/protect';
+import UserModel from './modules/user/user.model';
 /**
  * Default app configurations
- */
+*/
 const app = express();
 const port = ENVIRONMENT.APP.PORT;
 const appName = ENVIRONMENT.APP.NAME;
-const stripeApp = new stripe(ENVIRONMENT.STRIPE.TEST.SECRET_KEY);
+const endpointSecret = ENVIRONMENT.STRIPE.TEST.WEBHOOK;
+const stripe = new Stripe(ENVIRONMENT.STRIPE.TEST.SECRET_KEY);
 
 /**
  * App Security
@@ -41,6 +43,48 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
     express.json()(req, res, next);
   }
 });
+
+app.post(
+  '/webhook',
+  express.raw({ type: 'application/json' }),
+  async (req: Request, res: Response) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(req.body, sig!, endpointSecret);
+      console.log(sig, event, endpointSecret);
+    } catch (err) {
+      throw new AppError(err as string);
+    }
+
+    // Handle the event
+    if (event.type === 'charge.succeeded') {
+      const email = event.data.object.billing_details.email;
+      console.log(event);
+      if (!email) {
+        return AppResponse(res, 200, null, `Email wasn't given since it's in a test environment`);
+      }
+      const updatedUser = await UserModel.updateOne(
+        { email },
+        {
+          paymentStatus: 'paid'
+        }
+      );
+      console.log(updatedUser);
+      if (!updatedUser) throw new AppError(`Error in updating user`);
+    } else {
+      console.log(`Unhandled event type ${event.type}`);
+    }
+
+    // Return a 200 response to acknowledge receipt of the event
+    return AppResponse(res, 200, null, 'User payment successful');
+  }
+);
+
+
+
+
 app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.disable('x-powered-by');
