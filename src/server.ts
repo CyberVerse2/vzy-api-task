@@ -34,10 +34,11 @@ app.use(cors());
 app.use(cookieParser());
 app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
   if (req.originalUrl === '/webhook') {
-    console.log(req.originalUrl)
+    console.log(req.originalUrl);
     next();
   } else {
-    console.log('This is where the error is happening')
+    console.log(req.originalUrl);
+    console.log('This is where the error is happening');
     express.json()(req, res, next);
   }
 });
