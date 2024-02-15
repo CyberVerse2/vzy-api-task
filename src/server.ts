@@ -16,8 +16,6 @@ import { catchAsync } from './common/utils/catchAsync';
 import timeout from 'connect-timeout';
 import cookieParser from 'cookie-parser';
 import { Stripe } from 'stripe';
-import { updateUser } from './modules/user/user.services';
-import { protect } from './common/middlewares/protect';
 import UserModel from './modules/user/user.model';
 /**
  * Default app configurations
@@ -35,7 +33,7 @@ app.use(helmet());
 app.use(cors());
 app.use(cookieParser());
 app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
-  if (req.originalUrl === '/api/v1/webhook') {
+  if (req.originalUrl === '/webhook') {
     console.log(req.originalUrl)
     next();
   } else {
