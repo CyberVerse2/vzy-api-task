@@ -14,18 +14,21 @@ const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const logger_1 = require("./common/utils/logger");
 const morgan_1 = __importDefault(require("morgan"));
+const appResponse_1 = require("./common/utils/appResponse");
 const db_1 = require("./common/configs/db");
 const catchAsync_1 = require("./common/utils/catchAsync");
 const connect_timeout_1 = __importDefault(require("connect-timeout"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const stripe_1 = __importDefault(require("stripe"));
+const stripe_1 = require("stripe");
+const user_model_1 = __importDefault(require("./modules/user/user.model"));
 /**
  * Default app configurations
- */
+*/
 const app = (0, express_1.default)();
 const port = environment_1.ENVIRONMENT.APP.PORT;
 const appName = environment_1.ENVIRONMENT.APP.NAME;
-const stripeApp = new stripe_1.default(environment_1.ENVIRONMENT.STRIPE.TEST.SECRET_KEY);
+const endpointSecret = environment_1.ENVIRONMENT.STRIPE.TEST.WEBHOOK;
+const stripe = new stripe_1.Stripe(environment_1.ENVIRONMENT.STRIPE.TEST.SECRET_KEY);
 /**
  * App Security
  */
@@ -33,14 +36,45 @@ app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)());
 app.use((0, cookie_parser_1.default)());
 app.use((req, res, next) => {
-    if (req.originalUrl === '/api/v1/webhook') {
+    if (req.originalUrl === '/webhook') {
         console.log(req.originalUrl);
         next();
     }
     else {
+        console.log(req.originalUrl);
         console.log('This is where the error is happening');
         express_1.default.json()(req, res, next);
     }
+});
+app.post('/webhook', express_1.default.raw({ type: 'application/json' }), async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+    try {
+        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+        console.log(sig, event, endpointSecret);
+    }
+    catch (err) {
+        throw new appError_1.default(err);
+    }
+    // Handle the event
+    if (event.type === 'charge.succeeded') {
+        const email = event.data.object.billing_details.email;
+        console.log(event);
+        if (!email) {
+            return (0, appResponse_1.AppResponse)(res, 200, null, `Email wasn't given since it's in a test environment`);
+        }
+        const updatedUser = await user_model_1.default.updateOne({ email }, {
+            paymentStatus: 'paid'
+        });
+        console.log(updatedUser);
+        if (!updatedUser)
+            throw new appError_1.default(`Error in updating user`);
+    }
+    else {
+        console.log(`Unhandled event type ${event.type}`);
+    }
+    // Return a 200 response to acknowledge receipt of the event
+    return (0, appResponse_1.AppResponse)(res, 200, null, 'User payment successful');
 });
 app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
 app.use(express_1.default.urlencoded({ limit: '50mb', extended: true }));
