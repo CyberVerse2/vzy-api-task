@@ -24,8 +24,8 @@ api.post(
     let event;
 
     try {
-      console.log(sig, event.type, endpointSecret);
       event = stripe.webhooks.constructEvent(req.body, sig!, endpointSecret);
+      console.log(sig, event, endpointSecret);
     } catch (err) {
       throw new AppError(err as string);
     }
