@@ -48,7 +48,6 @@ async function authenticate(accessToken, refreshToken) {
             return await handleAccessTokenRefresh();
         }
         else {
-            console.log(error);
             throw new appError_1.default('Session Expired, please log in again', 401);
         }
     }

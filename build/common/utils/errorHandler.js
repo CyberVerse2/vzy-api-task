@@ -19,7 +19,6 @@ const handleError = (err, req, res, next) => {
     err.message = err.message || 'Something went wrong';
     err.data = err.data || null;
     const { statusCode, message, data } = err;
-    // console.log(err.detail);
     logger_1.logger.error(`${statusCode} - ${message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     if (err.timeout) {
         return res.status(408).send({
@@ -36,7 +35,6 @@ const handleError = (err, req, res, next) => {
         });
     }
     if (err instanceof class_validator_1.ValidationError) {
-        console.log('error dey validation');
         err = handleValidationError(err);
     }
     if (environment_1.ENVIRONMENT.APP.ENV === 'local') {

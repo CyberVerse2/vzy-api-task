@@ -15,7 +15,6 @@ export const handleError = (err, req, res, next) => {
   err.data = err.data || null;
 
   const { statusCode, message, data } = err;
-  // console.log(err.detail);
 
   logger.error(`${statusCode} - ${message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
 
@@ -35,7 +34,6 @@ export const handleError = (err, req, res, next) => {
     });
   }
   if (err instanceof ValidationError) {
-    console.log('error dey validation');
     err = handleValidationError(err);
   }
 

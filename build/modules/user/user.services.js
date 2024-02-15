@@ -11,8 +11,7 @@ async function findUser(value, field) {
 }
 exports.findUser = findUser;
 async function updateUser(id, details) {
-    console.log(id, details);
-    const updatedUser = await user_model_1.default.findByIdAndUpdate(id, details, { new: true }).catch((err) => console.log(err));
+    const updatedUser = await user_model_1.default.findByIdAndUpdate(id, details, { new: true });
     if (!updatedUser)
         throw new appError_1.default(`Error in updating user. Please try again`, 400);
     return updatedUser;

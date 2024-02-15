@@ -34,11 +34,8 @@ app.use(cors());
 app.use(cookieParser());
 app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
   if (req.originalUrl === '/webhook') {
-    console.log(req.originalUrl);
     next();
   } else {
-    console.log(req.originalUrl);
-    console.log('This is where the error is happening');
     express.json()(req, res, next);
   }
 });
@@ -52,15 +49,14 @@ app.post(
 
     try {
       event = stripe.webhooks.constructEvent(req.body, sig!, endpointSecret);
-      console.log(sig, event, endpointSecret);
-    } catch (err) {
-      throw new AppError(err as string);
+    } catch (err: unknown) {
+      const error = err as Error;
+      AppResponse(res, 400, null, `Webhook Error: ${error.message}`);
     }
 
     // Handle the event
     if (event.type === 'charge.succeeded') {
       const email = event.data.object.billing_details.email;
-      console.log(event);
       if (!email) {
         return AppResponse(res, 200, null, `Email wasn't given since it's in a test environment`);
       }
@@ -70,14 +66,14 @@ app.post(
           paymentStatus: 'paid'
         }
       );
-      console.log(updatedUser);
       if (!updatedUser) throw new AppError(`Error in updating user`);
+      return AppResponse(res, 200, null, 'User payment successful');
     } else {
       console.log(`Unhandled event type ${event.type}`);
     }
 
     // Return a 200 response to acknowledge receipt of the event
-    return AppResponse(res, 200, null, 'User payment successful');
+    res.json({ received: true });
   }
 );
 

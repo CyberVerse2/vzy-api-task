@@ -10,7 +10,6 @@ const helper_1 = require("../../common/utils/helper");
 const user_services_1 = require("../user/user.services");
 async function createNewUser(firstName, lastName, country, email, password, isTermsAndConditionAccepted) {
     const user = await (0, user_services_1.findUser)(email, 'email');
-    console.log(user);
     if (user) {
         throw new appError_1.default('User already exists', 409);
     }

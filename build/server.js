@@ -37,12 +37,9 @@ app.use((0, cors_1.default)());
 app.use((0, cookie_parser_1.default)());
 app.use((req, res, next) => {
     if (req.originalUrl === '/webhook') {
-        console.log(req.originalUrl);
         next();
     }
     else {
-        console.log(req.originalUrl);
-        console.log('This is where the error is happening');
         express_1.default.json()(req, res, next);
     }
 });
@@ -51,30 +48,29 @@ app.post('/webhook', express_1.default.raw({ type: 'application/json' }), async 
     let event;
     try {
         event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-        console.log(sig, event, endpointSecret);
     }
     catch (err) {
-        throw new appError_1.default(err);
+        const error = err;
+        (0, appResponse_1.AppResponse)(res, 400, null, `Webhook Error: ${error.message}`);
     }
     // Handle the event
     if (event.type === 'charge.succeeded') {
         const email = event.data.object.billing_details.email;
-        console.log(event);
         if (!email) {
             return (0, appResponse_1.AppResponse)(res, 200, null, `Email wasn't given since it's in a test environment`);
         }
         const updatedUser = await user_model_1.default.updateOne({ email }, {
             paymentStatus: 'paid'
         });
-        console.log(updatedUser);
         if (!updatedUser)
             throw new appError_1.default(`Error in updating user`);
+        return (0, appResponse_1.AppResponse)(res, 200, null, 'User payment successful');
     }
     else {
         console.log(`Unhandled event type ${event.type}`);
     }
     // Return a 200 response to acknowledge receipt of the event
-    return (0, appResponse_1.AppResponse)(res, 200, null, 'User payment successful');
+    res.json({ received: true });
 });
 app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
 app.use(express_1.default.urlencoded({ limit: '50mb', extended: true }));

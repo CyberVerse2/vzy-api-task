@@ -13,7 +13,6 @@ export async function createNewUser(
   isTermsAndConditionAccepted: boolean
 ) {
   const user = await findUser(email, 'email');
-  console.log(user)
   if (user) {
     throw new AppError('User already exists', 409);
   }
