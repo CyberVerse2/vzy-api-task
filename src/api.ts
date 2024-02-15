@@ -16,7 +16,6 @@ api.use('/user', userRouter);
 
 const endpointSecret = ENVIRONMENT.STRIPE.TEST.WEBHOOK;
 const stripe = new stripePackage(ENVIRONMENT.STRIPE.TEST.SECRET_KEY);
-console.log(endpointSecret);
 api.post(
   '/webhook',
   express.raw({ type: 'application/json' }),
@@ -25,6 +24,7 @@ api.post(
     let event;
 
     try {
+      console.log(sig, event.type, endpointSecret);
       event = stripe.webhooks.constructEvent(req.body, sig!, endpointSecret);
     } catch (err) {
       throw new AppError(err as string);

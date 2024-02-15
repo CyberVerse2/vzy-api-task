@@ -17,11 +17,11 @@ api.use('/auth', auth_router_1.default);
 api.use('/user', user_router_1.default);
 const endpointSecret = environment_1.ENVIRONMENT.STRIPE.TEST.WEBHOOK;
 const stripe = new stripe_1.default(environment_1.ENVIRONMENT.STRIPE.TEST.SECRET_KEY);
-console.log(endpointSecret);
 api.post('/webhook', express_2.default.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
     try {
+        console.log(sig, event.type, endpointSecret);
         event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     }
     catch (err) {
