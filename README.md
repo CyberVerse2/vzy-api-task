@@ -2,11 +2,9 @@
 
 # ExpressJS Project
 
-[![StartEase](https://img.shields.io/badge/Generated%20by-StartEase-blue)](https://github.com/JC-Coder/startease)
-
 ## Overview
 
-Welcome to your project generated using StartEase! This guide will walk you through the basic configuration steps to get your backend project up and running.
+Welcome to vzy-api. This guide will walk you through the basic configuration steps to get your backend project up and running.
 
 ## Prerequisites
 
@@ -44,6 +42,13 @@ Your project relies on environment variables for configuration. To set up these 
    APP_NAME=YourAppName
    APP_PORT=3000
    APP_ENV=development
+   DB=your db url
+   ACCESS_JWT_KEY=
+   REFRESH_JWT_KEY=
+   ACCESS_JWT_EXPIRES_IN=
+   REFRESH_JWT_EXPIRES_IN=
+   STRIPE_TEST_SECRET_KEY=
+   STRIPE_TEST_WEBHOOK_SECRET_KEY=
    ```
 
    Note: configuration variables should be added based on config in the environment.js file.
